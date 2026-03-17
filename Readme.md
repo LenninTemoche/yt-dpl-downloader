@@ -1,90 +1,122 @@
-# yt-dlp Video Downloader V 0.1
+# yt-dpl Downloader V0.2
 
-Este proyecto tiene como objetivo simplificar la descarga de contenido multimedia mediante el uso de herramientas de código abierto potentes como `yt-dlp` y `FFmpeg`. Está diseñado para entornos Windows, proporcionando una interfaz de comandos optimizada para obtener videos en formato MP4 con diversas calidades.
+Este proyecto simplifica la descarga de contenido multimedia mediante herramientas de código abierto como `yt-dlp` y `FFmpeg`. Incluye una **interfaz gráfica moderna** construida con Streamlit, diseñada con estética futurista y preparada para escalar hacia funcionalidades de IA.
 
 ---
 
-## 1. Estructura del Proyecto
-Para garantizar un funcionamiento óptimo, los componentes deben estar organizados en la raíz de la carpeta:
+## 📸 Preview
+
+### Vista Principal
+![Vista principal del yt-dpl Downloader](docs/screenshots/main_view.png)
+
+### AI Suite + Historial
+![Sección AI Intelligence Suite e historial de descargas](docs/screenshots/ai_suite_history.png)
+
+---
+
+## Estructura del Proyecto
 
 ```text
-yt-dlp-downloader/
-├── yt-dlp.exe    <- Binario principal del extractor
-├── ffmpeg.exe    <- Codificador para fusión de audio y video
-├── ffprobe.exe   <- Herramienta de análisis multimedia
-└── descargas/    <- Los videos se guardarán aquí (puedes cambiar el nombre)
+yt-dpl-downloader/
+├── app/
+│   ├── main.py           ← Interfaz Streamlit (UI)
+│   ├── core/
+│   │   └── downloader.py ← Lógica de descarga (yt-dlp)
+│   ├── data/
+│   │   └── history_manager.py ← Historial (JSON)
+│   ├── services/         ← (Etapa 2: IA / APIs / MCP)
+│   └── utils/            ← Helpers
+├── descargas/            ← Videos descargados
+├── docs/screenshots/     ← Capturas de pantalla
+├── venv/                 ← Entorno virtual Python
+├── yt-dlp.exe            ← Binario del extractor
+├── ffmpeg.exe            ← Codificador audio/video
+├── ffprobe.exe           ← Análisis multimedia
+├── Lanzar_Hub.bat        ← Acceso directo (doble clic)
+├── .env                  ← Variables de entorno (privado)
+├── .gitignore            ← Archivos excluidos de Git
+└── Readme.md
 ```
 
 ---
 
-## 2. Uso de la Terminal
-No es necesario instalar programas pesados; simplemente utiliza la terminal de tu preferencia (PowerShell, CMD o la terminal de VS Code):
+## Modo Aplicación Gráfica (Streamlit)
 
-1. Abre la terminal en la ruta: `f:\tu-ruta\yt-dlp-downloader`.
-2. Escribe el comando deseado y presiona **Enter**.
+1.  Ejecuta el archivo `Lanzar_Hub.bat` (doble clic).
+2.  Se abrirá automáticamente en tu navegador en `http://localhost:8501`.
+3.  Pega la URL, elige formato (MP4/MP3), calidad y descarga con progreso en tiempo real.
+
+### Funcionalidades
+- **Selector de formato:** Video (MP4) o Audio (MP3)
+- **Calidad:** 360p, 720p (default), 1080p
+- **Barra de progreso:** Visualización en tiempo real
+- **Historial:** Tabla con descargas recientes
+- **Ruta de descarga:** Visible en el sidebar y en opciones
 
 ---
 
-## 3. Comandos de Descarga (MP4)
+## Modo Terminal (Legacy)
 
-A continuación, los comandos configurados para obtener el mejor balance entre peso y resolución:
+Si prefieres la línea de comandos, abre PowerShell en la carpeta del proyecto:
 
-### ✅ Resolución 1080p (Alta Definición)
+### Resolución 1080p (Alta Definición)
 ```powershell
 .\yt-dlp.exe -f "bv[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" --merge-output-format mp4 "URL"
 ```
 
-### ✅ Resolución 720p (Estándar)
+### Resolución 720p (Estándar)
 ```powershell
 .\yt-dlp.exe -f "bv[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]" --merge-output-format mp4 "URL"
 ```
 
-### ✅ Resolución 360p (Baja/Móvil)
+### Resolución 360p (Baja/Móvil)
 ```powershell
 .\yt-dlp.exe -f "bv[height<=360][ext=mp4]+ba[ext=m4a]/b[height<=360][ext=mp4]" --merge-output-format mp4 "URL"
 ```
 
-### Guardar en una carpeta específica
-Si deseas que el video se guarde en una carpeta específica manualmente (por ejemplo, dentro de "descargas"), agrega `-o` seguido de la ruta:
+### Guardar en carpeta específica
 ```powershell
 .\yt-dlp.exe -o "descargas/%(title)s.%(ext)s" "URL"
 ```
-*(Nota: Si la carpeta no existe, el programa la creará automáticamente).*
 
+### Solo Audio (MP3)
+```powershell
+.\yt-dlp.exe -x --audio-format mp3 "URL"
+```
 
 ---
 
-## 4. Recomendaciones y Mantenimiento
+## 🔧 Recomendaciones
 
-- **Actualización:** Los canales difusores de contenido suelen actualizar sus protocolos frecuentemente. Puedes consultar el estado de los canales en la página oficial de yt-dlp o inetenta mantener tu herramienta al día usando el comando:
+- **Actualizar yt-dlp:** `.\yt-dlp.exe -U`
+- **Entorno virtual:** Todas las dependencias están aisladas en `venv/`
+- **Privacidad:** Las claves API se guardan en `.env` (excluido de Git)
 
-  ```powershell
-  .\yt-dlp.exe -U
-  ```
+---
 
-- **Solo Audio:** Si solo necesitas el audio en alta fidelidad:
-  ```powershell
-  .\yt-dlp.exe -x --audio-format mp3 "URL"
-  ```
+## Roadmap: Etapa 2 (IA)
+
+La arquitectura está preparada para escalar a:
+- **Transcripción:** Conversión de audio a texto vía APIs externas
+- **Resúmenes IA:** Generación automática de puntos clave
+- **Chat con Video:** Consultas interactivas sobre el contenido
 
 ---
 
 ## Aviso Legal y Responsabilidad
-El uso de esta herramienta está destinado exclusivamente a **fines educativos y de investigación**. 
 
-1. **Derechos de Autor:** El usuario es el único responsable de respetar los términos de servicio de las plataformas y las leyes de propiedad intelectual vigentes. Solo descarga contenido del cual poseas derechos o permiso explícito.
+El uso de esta herramienta está destinado exclusivamente a **fines educativos y de investigación**.
 
-2. **Exención de Responsabilidad:** Los creadores de esta guía y de las herramientas mencionadas no se hacen responsables del uso indebido, descargas ilegales o cualquier daño derivado del uso de este software.
+1. **Derechos de Autor:** El usuario es el único responsable de respetar los términos de servicio de las plataformas y las leyes de propiedad intelectual vigentes.
+2. **Exención de Responsabilidad:** Los creadores de esta guía y herramientas no se hacen responsables del uso indebido o descargas ilegales.
 
 ---
 
 ## Créditos y Reconocimientos
 
-Este proyecto es posible gracias al increíble trabajo de las comunidades de código abierto:
-
-*   **yt-dlp:** El extractor de contenido multimedia más avanzado del mundo. [Repositorio en GitHub](https://github.com/yt-dlp/yt-dlp)
-
-*   **FFmpeg:** La biblioteca líder para el manejo de video, audio y otros archivos multimedia. [Página Oficial](https://ffmpeg.org/)
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp):** Extractor de contenido multimedia open-source.
+- **[FFmpeg](https://ffmpeg.org/):** Biblioteca líder para manejo de audio y video.
+- **[Streamlit](https://streamlit.io/):** Framework para interfaces de datos interactivas.
 
 ---
-*Guía generada para el entornos de desarrollo colaborativo y educativo.*
+*Proyecto para entornos de desarrollo colaborativo y educativo.*
