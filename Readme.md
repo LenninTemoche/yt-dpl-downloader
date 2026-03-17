@@ -1,4 +1,4 @@
-# yt-dpl Downloader V0.3 - BLACKBOXAI Seguridad ✅
+# yt-dpl Downloader V0.3
 
 Este proyecto simplifica la descarga de contenido multimedia mediante herramientas de código abierto como `yt-dlp` y `FFmpeg`. Incluye una **interfaz gráfica moderna** construida con Streamlit, diseñada con estética futurista y preparada para escalar hacia funcionalidades de IA.
 
@@ -33,29 +33,29 @@ yt-dpl-downloader/
 └── README.md
 ```
 
-## 🎮 Modo Aplicación Gráfica
+## Modo Aplicación Gráfica
 1. **Doble clic** `Lanzar_Hub.bat`
 2. Abre `http://localhost:8501`
 3. **Pega URL** → Formato → **⬇️ Download**
 
-### Funcionalidades V0.3 (BLACKBOXAI Fixes)
+### Funcionalidades V0.3 
 - ✅ **Solo 1er video** playlists (no bucles)
 - ✅ **Sin warnings** JavaScript
 - ✅ Botón deshabilitado en descarga
 - ✅ Warning playlist detectada
 - Barra progreso + historial
 
-## 💻 Terminal
+## Terminal
 ```powershell
 .\yt-dlp.exe -f \"bv[height<=720][ext=mp4]+ba\" --merge-output-format mp4 \"URL\"
 .\yt-dlp.exe -x --audio-format mp3 \"URL\"
 ```
 
-## 🔧 Recomendaciones
+## Recomendaciones
 - `.\yt-dlp.exe --update`
 - `python -m streamlit run app/main.py`
 
-## 🔒 Seguridad (Verificado)
+## Seguridad (Verificado)
 - SSL verificado (sin bypass)
 - Paths seguros
 - subprocess tkinter seguro  
