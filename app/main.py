@@ -4,6 +4,7 @@ import time
 import pandas as pd
 from app.core.downloader import Downloader
 from app.data.history_manager import HistoryManager
+from app.utils.folder_picker import pick_folder
 
 # ──────────────────────────────────────────────
 # Configuración de página
@@ -100,25 +101,40 @@ st.markdown("""
     }
     .stSelectbox label { color: #cbd5e1 !important; font-weight: 500 !important; font-size: 14px !important; }
 
-    /* ═══ Download Button (Gradient Cyan → Purple + Glow) ═══ */
+    /* ═══ Buttons ═══ */
     .stButton > button {
         width: 100% !important;
         background: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%) !important;
         color: #ffffff !important;
         border: none !important;
-        border-radius: 16px !important;
-        padding: 16px 32px !important;
+        border-radius: 12px !important;
+        padding: 12px 24px !important;
         font-weight: 700 !important;
-        font-size: 18px !important;
-        letter-spacing: 0.5px !important;
-        box-shadow: 0 0 20px -5px rgba(168,85,247,0.5) !important;
-        transition: all 0.3s ease !important;
-        cursor: pointer !important;
+        font-size: 16px !important;
+        box-shadow: 0 0 15px -5px rgba(168,85,247,0.4) !important;
+        transition: all 0.2s ease !important;
     }
     .stButton > button:hover {
         opacity: 0.9 !important;
-        box-shadow: 0 0 30px -5px rgba(168,85,247,0.7) !important;
         transform: translateY(-1px) !important;
+        box-shadow: 0 0 20px -5px rgba(168,85,247,0.6) !important;
+    }
+
+    /* Botón Secundario (Browse) */
+    .secondary-btn div.stButton > button {
+        background: rgba(51, 65, 85, 0.4) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        height: 48px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        width: auto !important;
+        min-width: 120px !important;
+        box-shadow: none !important;
+        margin-top: 18px !important;
+    }
+    .secondary-btn div.stButton > button:hover {
+        background: rgba(51, 65, 85, 0.6) !important;
+        border-color: rgba(34,211,238,0.4) !important;
     }
 
     /* ═══ Progress Bar ═══ */
@@ -258,14 +274,29 @@ st.markdown("""
 # ──────────────────────────────────────────────
 # Inicialización de servicios
 # ──────────────────────────────────────────────
-DEFAULT_DOWNLOAD_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "descargas")
+# Ruta estándar de descargas del sistema (PC/Downloads)
+def get_default_download_path():
+    try:
+        # Intenta obtener la ruta estándar de descargas en Windows
+        home = os.path.expanduser("~")
+        downloads = os.path.join(home, "Downloads")
+        if os.path.exists(downloads):
+            return downloads
+    except Exception:
+        pass
+    # Fallback a carpeta local del proyecto
+    return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "descargas")
 
 if 'download_path' not in st.session_state:
-    st.session_state.download_path = DEFAULT_DOWNLOAD_PATH
+    st.session_state.download_path = get_default_download_path()
 if 'downloader' not in st.session_state:
     st.session_state.downloader = Downloader(output_path=st.session_state.download_path)
 if 'history' not in st.session_state:
     st.session_state.history = HistoryManager()
+
+# Agregar bandera para evitar bucles de descarga
+if 'is_downloading' not in st.session_state:
+    st.session_state.is_downloading = False
 
 # ──────────────────────────────────────────────
 # SIDEBAR (Navegación Futurista)
@@ -295,12 +326,13 @@ with st.sidebar:
 
     st.markdown("<br>" * 2, unsafe_allow_html=True)
 
-    # Ruta de descarga (editable)
-    st.markdown('<span style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:2px;">📂 Download Path</span>', unsafe_allow_html=True)
-    new_path = st.text_input("Ruta de descarga", value=st.session_state.download_path, label_visibility="collapsed", key="path_input")
-    if new_path != st.session_state.download_path:
-        st.session_state.download_path = new_path
-        st.session_state.downloader = Downloader(output_path=new_path)
+    # Ruta de descarga (display - se edita en Options)
+    st.markdown(f"""
+    <div style="padding:0 0 16px 0;">
+        <span style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:2px;">📂 Download Path</span>
+        <div class="path-display" style="margin-top:8px; word-break:break-all;">{st.session_state.download_path}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Avatar / Proyecto
     st.markdown("""
@@ -328,13 +360,10 @@ st.markdown("<br>", unsafe_allow_html=True)
 # URL Input
 url = st.text_input("URL del video", placeholder="https://www.youtube.com/watch?v=...", label_visibility="collapsed")
 
-st.markdown("<br>", unsafe_allow_html=True)
-
 # ── Grid: Options + Status ──
 col_opts, col_status = st.columns(2, gap="large")
 
 with col_opts:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.markdown('<div class="section-cyan">⚡ Options</div>', unsafe_allow_html=True)
     
     # Format Toggle
@@ -344,43 +373,58 @@ with col_opts:
     quality = st.selectbox("Quality", ["720", "1080", "360"], index=0,
                           format_func=lambda x: f"{x}p (HD)" if x == "720" else f"{x}p (Full HD)" if x == "1080" else f"{x}p (SD)")
     
-    # Output Path
-    st.markdown(f"""
-    <div style="margin-top:8px;">
-        <label style="font-size:14px; font-weight:500; color:#cbd5e1 !important; margin-bottom:8px; display:block;">Output Path</label>
-        <div class="path-display">📁 {st.session_state.download_path}</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Output Path (selector de carpeta nativo)
+    path_col1, path_col2 = st.columns([2.5, 1])
+    with path_col1:
+        st.markdown(f"""
+        <div style="margin-top:8px;">
+            <label style="font-size:13px; font-weight:600; color:#94a3b8 !important; margin-bottom:8px; display:block;">Output Folder</label>
+            <div class="path-display" style="padding:12px 16px;">📁 {st.session_state.download_path}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with path_col2:
+        st.markdown('<div class="secondary-btn" style="margin-top: 32px;">', unsafe_allow_html=True)
+        if st.button("📂", key="browse_btn"):
+            selected = pick_folder(st.session_state.download_path)
+            if selected:
+                st.session_state.download_path = selected
+                st.session_state.downloader = Downloader(output_path=selected)
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col_status:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.markdown('<div class="section-purple">📡 Status</div>', unsafe_allow_html=True)
     
     # Download Button
-    btn_dl = st.button("⬇️  Download Now")
+    btn_dl = st.button("⬇️  Download Now", disabled=st.session_state.is_downloading)
     
     # Placeholder para progreso
     progress_placeholder = st.empty()
     status_placeholder = st.empty()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
 # LÓGICA DE DESCARGA
 # ──────────────────────────────────────────────
 if btn_dl:
-    if not url:
+    if st.session_state.is_downloading:
+        status_placeholder.warning("⚠️ A download is already in progress. Please wait.")
+    elif not url:
         status_placeholder.error("⚠️ Please enter a valid URL.")
     else:
+        st.session_state.is_downloading = True
         with status_placeholder.container():
             st.markdown('<p style="color:#cbd5e1 !important; font-style:italic;">🔍 Fetching video info...</p>', unsafe_allow_html=True)
         
         info = st.session_state.downloader.get_video_info(url)
         
+        # Detectar si es playlist
+        is_playlist = info.get('is_playlist', False)
+        if is_playlist:
+            st.warning("⚠️ Detectada playlist. Solo se descargará el PRIMER video para evitar bucles infinitos.")
+        
         if "error" in info:
             status_placeholder.error(f"Error: {info['error']}")
+            st.session_state.is_downloading = False
         else:
             title = info.get('title', 'Video_descargado')
             
@@ -409,14 +453,16 @@ if btn_dl:
                 progress_hook=progress_hook
             )
             
-            if result.get("success"):
-                st.session_state.history.add_entry(title, url, mode_clean, quality)
-                status_placeholder.success(f"✅ Saved to: {st.session_state.download_path}")
-                st.balloons()
-                time.sleep(2)
-                st.rerun()
+            if result.get('success'):
+                status_placeholder.success(f"✅ Download complete: {title}")
             else:
-                status_placeholder.error(f"❌ Error: {result.get('error')}")
+                status_placeholder.error(f"❌ Download failed: {result.get('error', 'Unknown error')}")
+            
+            # Restablecer bandera de descarga
+            st.session_state.is_downloading = False
+
+        # Asegurar que la bandera se restablezca incluso en caso de error
+        st.session_state.is_downloading = False
 
 # ──────────────────────────────────────────────
 # AI INTELLIGENCE SUITE (Etapa 2 Teaser)
