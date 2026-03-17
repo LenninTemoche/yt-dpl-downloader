@@ -35,7 +35,6 @@ class Downloader:
             'playlistend': 1,
             'skip_download': True,
             'socket_timeout': 15,
-            'nocheckcertificate': True,
             'extract_flat': True,
             'ignore_javascript_errors': True,
         }
@@ -86,9 +85,8 @@ class Downloader:
             'progress_hooks': [progress_hook] if progress_hook else [],
             'no_color': True,
             'quiet': True,
-            'sleep_interval': 3,
+'sleep_interval': 3,
             'max_sleep_interval': 10,
-            'nocheckcertificate': True,
             'noplaylist': True,
             'playlistend': 1,
             'ignore_javascript_errors': True,
