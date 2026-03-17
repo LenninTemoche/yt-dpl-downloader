@@ -1,74 +1,86 @@
-# yt-dpl Downloader V0.3 - 
+# yt-dpl Downloader V0.3 - BLACKBOXAI Seguridad ✅
 
-Este proyecto simplifica la descarga de contenido multimedia mediante herramientas de código abierto como `yt-dlp` y `FFmpeg`. **Interfaz gráfica moderna** con Streamlit, estética futurista, escalable a IA.
+Este proyecto simplifica la descarga de contenido multimedia mediante herramientas de código abierto como `yt-dlp` y `FFmpeg`. Incluye una **interfaz gráfica moderna** construida con Streamlit, diseñada con estética futurista y preparada para escalar hacia funcionalidades de IA.
+
+---
 
 ## Preview
 ### Vista Principal
-![Main](docs/screenshots/main_view.png)
-### AI Suite + Historial  
-![AI](docs/screenshots/ai_suite_history.png)
+![Vista principal del yt-dpl Downloader](docs/screenshots/main_view.png)
 
-## 📁 Estructura
+### AI Suite + Historial
+![Sección AI Intelligence Suite e historial de descargas](docs/screenshots/ai_suite_history.png)
+
+---
+
+## Estructura del Proyecto
 ```
 yt-dpl-downloader/
 ├── app/
-│   ├── main.py           # UI Streamlit
-│   ├── core/downloader.py # yt-dlp logic  
-│   ├── data/history.json # Historial local
-│   └── utils/
-├── descargas/           # Output
+│   ├── main.py           ← Interfaz Streamlit (UI)
+│   ├── core/
+│   │   └── downloader.py ← Lógica de descarga (yt-dlp)  
+│   ├── data/
+│   │   └── history_manager.py ← Historial (JSON)
+│   ├── services/         ← (Etapa 2: IA / APIs)
+│   └── utils/            ← Helpers
+├── descargas/            ← Videos descargados
+├── docs/screenshots/     ← Capturas
 ├── yt-dlp.exe
-├── ffmpeg.exe
-├── Lanzar_Hub.bat       # Doble clic → Listo
+├── ffmpeg.exe, ffprobe.exe
+├── Lanzar_Hub.bat        ← Doble clic
+├── .gitignore
 └── README.md
 ```
 
-## Uso Gráfico (Streamlit)
+## 🎮 Modo Aplicación Gráfica
 1. **Doble clic** `Lanzar_Hub.bat`
-2. **Browser abre** `http://localhost:8501`
-3. **Pega URL** → Formato/Calidad → **⬇️ Download**
+2. Abre `http://localhost:8501`
+3. **Pega URL** → Formato → **⬇️ Download**
 
-**Nuevas Funcionalidades (V0.3)**:
-- ✅ **Solo 1er video** playlists (no bucles infinitos)
-- ✅ **Sin warnings** JavaScript  
-- ✅ Botón **deshabilitado** durante descarga
-- ✅ **Warning** playlist detectada
-- ✅ Barra progreso + historial
+### Funcionalidades V0.3 (BLACKBOXAI Fixes)
+- ✅ **Solo 1er video** playlists (no bucles)
+- ✅ **Sin warnings** JavaScript
+- ✅ Botón deshabilitado en descarga
+- ✅ Warning playlist detectada
+- Barra progreso + historial
 
-## 💻 Terminal (Opcional)
+## 💻 Terminal
 ```powershell
-# 720p (default)
-.\yt-dlp.exe -f \"bv[height<=720][ext=mp4]+ba[ext=m4a]\" --merge-output-format mp4 \"URL\"
-
-# MP3 solo
+.\yt-dlp.exe -f \"bv[height<=720][ext=mp4]+ba\" --merge-output-format mp4 \"URL\"
 .\yt-dlp.exe -x --audio-format mp3 \"URL\"
 ```
 
-## Seguridad Verificada (BLACKBOXAI Audit)
-- ✅ **SSL seguro** (sin bypass certificados)
-- ✅ Paths sanitizados  
-- ✅ subprocess seguro (tkinter)
-- ✅ Local-only (sin APIs externas)
-- ✅ No command injection
+## 🔧 Recomendaciones
+- `.\yt-dlp.exe --update`
+- `python -m streamlit run app/main.py`
 
-## Setup Manual
-```powershell
-python -m streamlit run app/main.py
-.\yt-dlp.exe --update  # Actualizar
-```
+## 🔒 Seguridad (Verificado)
+- SSL verificado (sin bypass)
+- Paths seguros
+- subprocess tkinter seguro  
+- Local-only
 
-## Roadmap Etapa 2: IA Suite
-- 🌐 **Transcripción** auto
-- 📄 **Resúmenes** IA
-- 💬 **Chat** con videos
-
-## Aviso Legal
-**Uso educativo únicamente**. Respeta derechos de autor y términos de servicio.
-
-## Créditos
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-- [FFmpeg](https://ffmpeg.org)
-- [Streamlit](https://streamlit.io)
+## Roadmap: Etapa 2 (IA)
+La arquitectura está preparada para escalar a:
+- **Transcripción:** Conversión de audio a texto vía APIs externas
+- **Resúmenes IA:** Generación automática de puntos clave
+- **Chat con Video:** Consultas interactivas sobre el contenido
 
 ---
-**V0.3 (2026) - Bucle fijo, seguridad OK, listo para producción**
+
+## Aviso Legal y Responsabilidad
+El uso de esta herramienta está destinado exclusivamente a **fines educativos y de investigación**.
+
+1. **Derechos de Autor:** El usuario es el único responsable de respetar los términos de servicio de las plataformas y las leyes de propiedad intelectual vigentes.
+2. **Exención de Responsabilidad:** Los creadores de esta guía y herramientas no se hacen responsables del uso indebido o descargas ilegales.
+
+---
+
+## Créditos y Reconocimientos
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp):** Extractor de contenido multimedia open-source.
+- **[FFmpeg](https://ffmpeg.org/):** Biblioteca líder para manejo de audio y video.
+- **[Streamlit](https://streamlit.io/):** Framework para interfaces de datos interactivas.
+
+---
+*V0.3 (2026) - Proyecto desarrollado con fines educativos y de experimentación*
